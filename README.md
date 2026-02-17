@@ -33,7 +33,7 @@ Stable
 
 **Important:** All results submitted should be based on the following version:
 
-- [BabelStream v?.?]()
+- [BabelStream v5.0](https://github.com/UoB-HPC/BabelStream/releases/tag/v5.0)
 
 Any modifications made to the source code and build/installation files must be 
 shared as part of the offerer submission.
@@ -105,7 +105,7 @@ cmake \
 -DMODEL=omp \
 -DCMAKE_CXX_COMPILER=nvc++ \
 -DOFFLOAD=ON \
--DOFFLOAD_FLAGS="-mp=gpu -gpu=cc80 -Minfo" \
+-DOFFLOAD_FLAGS="-mp=gpu -gpu=cc90 -Minfo" \
 ../ 
 ```
 
@@ -116,7 +116,7 @@ cmake \
 -DMODEL=cuda \
 -DCMAKE_CXX_COMPILER=nvc++ \
 -DCMAKE_CUDA_COMPILER=nvcc \
--DCUDA_ARCH=sm_80 \
+-DCUDA_ARCH=sm_90 \
 ../ 
 ```
 
@@ -129,41 +129,74 @@ cmake \
 The bidder is required to run the following tests
 
 - CPU memory bandwidth:
-  + Single node runs across all compute nodes concurrently
+  + Single node runs across all compute nodes.
   + All CPU cores must be running BabelStream in parallel via OpenMP threads
-    or another parallel model implemented in BabelStream
+    or another parallel model implemented in BabelStream.
   + The sizes of the allocated arrays in BabelStream must be
-    4x larger than the largest level of cache (see below for how
-    to set this value)
+    4x larger than the largest level of cache. This can be set at run time
+    using the `--arraysize` option to BabelStream.
+  + A minimum of 100 iterations (BabelStream default) must be used for the test.
   + The difference between the maximum measured per-node Triad memory
     bandwidth and the minimum measured per-node Triad memory bandwidth
     must be equal to or less than 5% of the mean measured per-node
-    Triad memory bandwidth
+    Triad memory bandwidth.
 
 - GPU memory bandwidth:
   + Arrays should only be allocated on device's global memory,
-  any pre-staging of data or use of user controlled cache is not allowed
-  + Single GPU/GCD runs across all GPU/GCD  concurrently
+    any pre-staging of data or use of user controlled cache is not allowed.
+  + Must be run across all compute nodes.
+  + Performance of all GPU/GCD on each node should be tested. The `--devices`
+    option to BabelStream may be used to target specific GPU/GCD on a 
+    node.
+  + A minimum of 100 iterations (BabelStream default) must be used for the test.
   + The sizes of the allocated arrays in BabelStream must be
-    4x larger than the largest level of cache (see below for how
-    to set this value)
+    4x larger than the largest level of cache. This can be set at run time
+    using the `--arraysize` option to BabelStream .
   + The difference between the maximum measured per-GPU/GCD Triad memory
     bandwidth and the minimum measured per-GPU/GCD Triad memory bandwidth
     must be equal to or less than 5% of the mean measured per-GPU/GCD
-    Triad memory bandwidth
+    Triad memory bandwidth.
 
 ### Benchmark execution
 
-The BabelStream executable, `<model>-stream`, can be found in the `build` directory
-and can be run without additional arguments, for example:
+The BabelStream executable, `<model>-stream`, can be found in the `build` directory.
+The following arguments will typically be used to modify its runtime behaviour:
+
+- `--arraysize SIZE` - the size of the arrays to use for the tests. The sizes
+  of the allocated arrays in BabelStream must be 4x larger than the largest
+  level of cache.
+- `device INDEX` - the index of the accelerator device to use (for accelerator 
+  memory tests). This option can be used to ensure all accelerator devices on 
+  a node are tested.
+
+Example run lines from testing on the [IsambardAI]() system
+
+**CPU memory (OpenMP):**
 
 ```bash
-#OpenMP execution on a CPU
-> export OMP_NUM_THREADS=4
-> ./omp-stream 
+# Execute using all 288 CPU cores
+export OMP_NUM_THREADS=288
+export OMP_PLACES=cores
+srun --hint=nomultithread --distribution=block:block \
+     --ntasks=1 --cpus-per-task=288 \
+     omp-stream --arraysize 65536000000
+```
 
-#OpenMP-Offload exection on a GPU
-> ./omp-stream 
+**GPU memory (CUDA):**
+
+```bash
+export OMP_NUM_THREADS=1
+
+devices="0 1 2 3"
+
+for device in $devices
+do
+   echo
+   echo "Running on device $device"
+   echo "===================="
+   echo
+   cuda-stream --device $device --arraysize 65536000000
+done
 ```
 
 All the kernels are validated at the end of their execution;
@@ -175,7 +208,6 @@ We supply example job submission scripts:
 - [IsambardAI GPU bandwidth]()
 
 ## Reporting results
-
 
 The primary figure of merit (FoM) is the Triad rate (MB/s).
 
@@ -192,6 +224,9 @@ The bidder should provide:
 ## Example performance data
 
 Example performance data from IsambardAI.
+
+- [IsambardAI CPU memory performance]()
+- [IsambardAI GPU memory performance]()
 
 ## License
 

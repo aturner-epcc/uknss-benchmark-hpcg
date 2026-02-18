@@ -1,6 +1,6 @@
-# UK-NSS High Performance Linpack (HPL) benchmark
+# UK-NSS High Performance Conjugate Gradients (HPCG) benchmark
 
-This repository contains the instructions for running the standard HPL
+This repository contains the instructions for running the standard HPCG
 benchmark as part of the UK-NSS procurement.
 
 ## Status
@@ -15,13 +15,13 @@ Stable
 
 ### Software
 
-- [HPL](https://www.netlib.org/benchmark/hpl/)
+- [HPCG](https://www.hpcg-benchmark.org/)
 
 
 ## Building the benchmark
 
-**Important:** All results submitted should be based on a version of HPL that
-meets [Top500 submission guidelines](https://top500.org/resources/frequently-asked-questions/).
+**Important:** All results submitted should be based on a version of HPCG that
+meets [Top500 submission guidelines](https://www.hpcg-benchmark.org/faq/index.html).
 
 ### Permitted modifications
 
@@ -34,27 +34,28 @@ submission guidelines.
 
 The bidder is required to run the following tests
 
-- Single node HPL performance
-  + Single node HPL runs across all compute nodes that run for at least 30 minutes
+- Single node HPCG performance
+  + Single node HPCG runs across all compute nodes that run for at least 30 minutes on each node
   + The difference between the maximum measured single-node performance and the minimum
     measured single-node performance must be equal to or less than 5% of the mean measured single-node performance.
-- Full system HPL performance
-  + A full system run of HPL using a minimum of 99% of all compute nodes under Top500/Green500 
-    conditions that runs for at least 12 hours
-  + This run should provide data for a valid Top500/Green500 submission including power draw data
+- Full system HPCG performance
+  + A full system run of HPCG using a minimum of 99% of all compute nodes under Top500 
+    submission rules that runs for at least 30 minutes
+  + This run should provide data for a valid Top500 submission
 
 ## Reporting results
 
-The primary figure of merit (FoM) is the HPL performance in Gflops.
+The primary figure of merit (FoM) is the HPCG performance in GFLOP/s.
 
 The bidder should provide:
 
-- The minimum, maximum and mean single node HPL performance across all nodes
+- For the single node runs: the minimum, maximum and mean single node HPCG performance
+  across all nodes
 - Details on how the tests were run, including any batch job submission
-  scripts and HPL input files
-- All data printed to STDOUT by the HPL software for all HPL runs 
-- Data on total energy use (in kWh) for each run and peak power draw (in kW)
-  for each HPL run
+  scripts and HPCG input files
+- All data printed to STDOUT by the HPCG software for all HPCG runs (single node and full system)
+- Data on energy use (in kWh) for each HPCG run and peak power draw (in kW)
+  for each HPCG run (per node for single node runs and aggregate for full system runs)
 
 ## License
 

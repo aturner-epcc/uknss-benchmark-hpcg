@@ -1,7 +1,7 @@
-# UK-NSS High Performance Conjugate Gradients (HPCG) benchmark
+# UK-NNSS High Performance Conjugate Gradients (HPCG) benchmark
 
 This repository contains the instructions for running the standard HPCG
-benchmark as part of the UK-NSS procurement.
+benchmark as part of the UK-NNSS procurement.
 
 ## Status
 
